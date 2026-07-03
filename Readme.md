@@ -5,6 +5,10 @@ A small project built with **Rust** and **Ratatui** that brings Conway's famous 
 
 Sometimes it's fun to put aside large frameworks and build something with your own hands. A terminal application may seem simple, but it is a great place to explore algorithms, event loops, rendering, and architecture. Watching a tiny world evolve from a handful of cells is surprisingly satisfying.
 
+## Demo
+
+![Game of Life Demo](output.gif)
+
 ## ✨ Features
 
 - 🎲 Random world generation
