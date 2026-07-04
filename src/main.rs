@@ -1,7 +1,11 @@
 use std::time::{Duration, Instant};
 
 use app::App;
-use ratatui::crossterm::event::{self, Event, KeyCode};
+use rand::RngExt;
+use ratatui::{
+    crossterm::event::{self, Event, KeyCode},
+    style::Color,
+};
 
 mod app;
 mod grid;
@@ -20,12 +24,20 @@ fn run(terminal: &mut ratatui::DefaultTerminal) -> std::io::Result<()> {
     let mut area = terminal.get_frame().area();
     let mut app = App::new(area.width as usize, area.height as usize);
     let mut last_star = Instant::now();
+    let mut rnd = rand::rng();
     loop {
         let _ = terminal.draw(|frame| {
             let new_area = frame.area();
             if new_area.width != area.width || new_area.height != area.height {
                 area = new_area;
+                let color = Color::Rgb(
+                    rnd.random_range(50..=255),
+                    rnd.random_range(50..=255),
+                    rnd.random_range(50..=255),
+                );
+
                 app = App::new(area.width as usize, area.height as usize);
+                app.set_cell_color(color);
                 app.randomize();
             }
 

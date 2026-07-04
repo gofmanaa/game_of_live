@@ -15,6 +15,7 @@ pub struct App {
     last_tick: Instant,
     paused: bool,
     show_help: bool,
+    cell_fg_color: Color,
 }
 
 impl App {
@@ -24,6 +25,7 @@ impl App {
             last_tick: Instant::now(),
             paused: false,
             show_help: false,
+            cell_fg_color: Color::White,
         }
     }
 
@@ -55,6 +57,10 @@ impl App {
         }
     }
 
+    pub fn set_cell_color(&mut self, color: Color) {
+        self.cell_fg_color = color;
+    }
+
     pub fn update(&mut self, frame: &mut Frame) {
         let area = frame.area();
         let mut lines = Vec::new();
@@ -82,7 +88,7 @@ impl App {
                     .title(title)
                     .style(Style::new().green()),
             )
-            .style(Style::default().fg(Color::White).bg(Color::Black));
+            .style(Style::default().fg(self.cell_fg_color).bg(Color::Black));
 
         frame.render_widget(paragraph, area);
 
