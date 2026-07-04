@@ -48,6 +48,13 @@ impl App {
         self.grid.step();
     }
 
+    pub fn rerandomize_period(&mut self, last_start: &mut Instant, mins: u64) {
+        if last_start.elapsed() >= Duration::from_mins(mins) {
+            self.randomize();
+            *last_start = Instant::now();
+        }
+    }
+
     pub fn update(&mut self, frame: &mut Frame) {
         let area = frame.area();
         let mut lines = Vec::new();

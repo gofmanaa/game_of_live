@@ -1,4 +1,4 @@
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use app::App;
 use ratatui::crossterm::event::{self, Event, KeyCode};
@@ -17,13 +17,29 @@ fn main() -> Result<(), std::io::Error> {
 }
 
 fn run(terminal: &mut ratatui::DefaultTerminal) -> std::io::Result<()> {
-    let area = terminal.get_frame().area();
+    let mut area = terminal.get_frame().area();
     let mut app = App::new(area.width as usize, area.height as usize);
+    let mut last_star = Instant::now();
     loop {
-        terminal.draw(|frame| app.update(frame))?;
+        let _ = terminal.draw(|frame| {
+            let new_area = frame.area();
+            if new_area.width != area.width || new_area.height != area.height {
+                area = new_area;
+                app = App::new(area.width as usize, area.height as usize);
+                app.randomize();
+            }
+
+            if last_star.elapsed() >= Duration::from_mins(3) {
+                app.rerandomize_period(&mut last_star, 3);
+            }
+
+            app.update(frame);
+        });
+
         if handle_events(&mut app)? {
             break Ok(());
         }
+        app.rerandomize_period(&mut last_star, 3);
     }
 }
 
@@ -36,7 +52,9 @@ fn handle_events(app: &mut App) -> std::io::Result<bool> {
         Event::Key(key) if key.is_press() => match key.code {
             KeyCode::Char('q') => return Ok(true),
             KeyCode::Char(' ') => app.toggle_pause(),
-            KeyCode::Char('r') => app.randomize(),
+            KeyCode::Char('r') => {
+                app.randomize();
+            }
             KeyCode::Char('n') => app.one_step(),
             KeyCode::Char('h') => app.toggle_help(),
 
